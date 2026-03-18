@@ -1,65 +1,204 @@
-import Image from "next/image";
+"use client"
+
+import { useState } from "react"
+import {
+  format,
+  addMonths,
+  subMonths,
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  getDay,
+} from "date-fns"
+import { Card, CardContent } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { translations } from "./locales"
 
 export default function Home() {
+  const [vehicle, setVehicle] = useState("")
+  const [allowedType, setAllowedType] = useState<"odd" | "even" | null>(null)
+  const [currentDate, setCurrentDate] = useState(new Date())
+  const [locale, setLocale] = useState<"en" | "si" | "ta">("en")
+  const [error, setError] = useState("")
+
+  const t = translations[locale]
+
+  const handleCheck = () => {
+    setError("") // reset error
+    if (vehicle.length !== 4) {
+      setError(t.errors.digits)
+      setAllowedType(null)
+      return
+    }
+
+    if (!/^\d{4}$/.test(vehicle)) {
+      setError(t.errors.invalid)
+      setAllowedType(null)
+      return
+    }
+
+    const lastDigit = parseInt(vehicle[vehicle.length - 1])
+    setAllowedType(lastDigit % 2 === 0 ? "even" : "odd")
+  }
+
+  const start = startOfMonth(currentDate)
+  const end = endOfMonth(currentDate)
+  const days = eachDayOfInterval({ start, end })
+  const startDayIndex = getDay(start)
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+    <main className="min-h-screen p-6 bg-gradient-to-br from-gray-50 to-gray-200 dark:from-black dark:to-gray-900 transition-colors">
+
+      {/* Language Switcher */}
+      <div className="flex justify-end mb-6 gap-2">
+        <Button
+          size="sm"
+          variant={locale === "en" ? "default" : "outline"}
+          onClick={() => setLocale("en")}
+        >
+          EN
+        </Button>
+        <Button
+          size="sm"
+          variant={locale === "si" ? "default" : "outline"}
+          onClick={() => setLocale("si")}
+        >
+          සිං
+        </Button>
+        <Button
+          size="sm"
+          variant={locale === "ta" ? "default" : "outline"}
+          onClick={() => setLocale("ta")}
+        >
+          தமிழ்
+        </Button>
+      </div>
+
+      {/* Title */}
+      <h1 className="text-4xl font-bold text-center mb-8 text-gray-900 dark:text-white">
+        {t.title}
+      </h1>
+
+      {/* Input Card */}
+      <Card className="max-w-md mx-auto mb-10 backdrop-blur-xl bg-white/70 dark:bg-white/5 border border-gray-200 dark:border-white/10 shadow-2xl rounded-2xl">
+        <CardContent className="p-6 space-y-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              {t.vehicleLabel}
+            </label>
+            <Input
+              placeholder={t.placeholder}
+              value={vehicle}
+              maxLength={4}
+              onChange={(e) => setVehicle(e.target.value.replace(/\D/g, ""))}
+              className="text-center text-lg tracking-widest bg-white/80 dark:bg-black/40 border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-green-500"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+          </div>
+
+          <Button
+            onClick={handleCheck}
+            className="w-full text-base font-semibold rounded-xl bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200 transition"
           >
-            Documentation
-          </a>
+            {t.checkButton}
+          </Button>
+
+          {error && (
+            <p className="text-center text-sm text-red-500 font-medium">{error}</p>
+          )}
+
+          {allowedType && !error && (
+            <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+              {locale === "si"
+                ? "ඉන්ධන වර්ගය:"
+                : locale === "ta"
+                ? "எரிபொருள் வகை:"
+                : "Fuel Type:"}{" "}
+              <span className="text-green-500 font-semibold">
+                {t.fuelType[allowedType]}
+              </span>
+            </p>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Calendar */}
+      <div className="max-w-4xl mx-auto backdrop-blur-xl bg-white/70 dark:bg-white/5 border border-gray-200 dark:border-white/10 shadow-2xl rounded-2xl p-6">
+        <div className="flex justify-between items-center mb-6">
+          <Button
+            variant="outline"
+            className="rounded-xl"
+            onClick={() => setCurrentDate(subMonths(currentDate, 1))}
+          >
+            {t.prevMonth}
+          </Button>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
+            {t.months[currentDate.getMonth()]} {currentDate.getFullYear()}
+          </h2>
+          <Button
+            variant="outline"
+            className="rounded-xl"
+            onClick={() => setCurrentDate(addMonths(currentDate, 1))}
+          >
+            {t.nextMonth}
+          </Button>
         </div>
-      </main>
-    </div>
-  );
+
+        {/* Week Days */}
+        <div className="grid grid-cols-7 mb-3 text-center text-sm font-medium text-gray-500 dark:text-gray-400">
+          {t.weekDays.map((day) => (
+            <div key={day}>{day}</div>
+          ))}
+        </div>
+
+        {/* Days */}
+        <div className="grid grid-cols-7 gap-3">
+          {Array.from({ length: startDayIndex }).map((_, i) => (
+            <div key={"empty-" + i}></div>
+          ))}
+          {days.map((date) => {
+            const day = date.getDate()
+            const isPast = date < today
+            const isAllowed =
+              allowedType &&
+              ((allowedType === "even" && day % 2 === 0) ||
+                (allowedType === "odd" && day % 2 !== 0))
+            const isToday =
+              format(date, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd")
+            return (
+              <div
+                key={date.toString()}
+                className={`h-14 flex items-center justify-center rounded-xl text-sm font-semibold transition-all duration-200 border cursor-pointer
+                  ${
+                    isPast
+                      ? "bg-red-500/80 text-white border-red-500"
+                      : isAllowed
+                      ? "bg-green-500 text-white border-green-500 shadow-lg hover:scale-105"
+                      : "bg-white/80 dark:bg-black/40 text-gray-700 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-800"
+                  }
+                  ${isToday ? "ring-2 ring-blue-500" : ""}`}
+              >
+                {day}
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Legend */}
+        <div className="flex gap-6 mt-6 text-sm justify-center text-gray-600 dark:text-gray-400">
+          <div className="flex items-center gap-2">
+            <span className="w-4 h-4 bg-green-500 rounded"></span> {t.legend.fuelDay}
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-4 h-4 bg-red-500 rounded"></span> {t.legend.pastDay}
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-4 h-4 bg-gray-300 dark:bg-gray-700 rounded"></span> {t.legend.notAllowed}
+          </div>
+        </div>
+      </div>
+    </main>
+  )
 }
