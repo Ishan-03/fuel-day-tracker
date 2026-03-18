@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   format,
   addMonths,
@@ -24,6 +24,23 @@ export default function Home() {
 
   const t = translations[locale]
 
+  // Update currentDate at midnight automatically
+  useEffect(() => {
+    const updateToday = () => setCurrentDate(new Date())
+
+    const now = new Date()
+    const msUntilMidnight =
+      new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime() -
+      now.getTime()
+
+    const timeout = setTimeout(() => {
+      updateToday()
+      setInterval(updateToday, 24 * 60 * 60 * 1000) // every 24h
+    }, msUntilMidnight)
+
+    return () => clearTimeout(timeout)
+  }, [])
+
   const handleCheck = () => {
     setError("") // reset error
     if (vehicle.length !== 4) {
@@ -46,12 +63,13 @@ export default function Home() {
   const end = endOfMonth(currentDate)
   const days = eachDayOfInterval({ start, end })
   const startDayIndex = getDay(start)
+
+  // Today at midnight for comparison
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
   return (
     <main className="min-h-screen p-6 bg-gradient-to-br from-gray-50 to-gray-200 dark:from-black dark:to-gray-900 transition-colors">
-
       {/* Language Switcher */}
       <div className="flex justify-end mb-6 gap-2">
         <Button
@@ -59,14 +77,14 @@ export default function Home() {
           variant={locale === "en" ? "default" : "outline"}
           onClick={() => setLocale("en")}
         >
-          EN
+          English
         </Button>
         <Button
           size="sm"
           variant={locale === "si" ? "default" : "outline"}
           onClick={() => setLocale("si")}
         >
-          සිං
+          සිංහල
         </Button>
         <Button
           size="sm"
@@ -110,17 +128,16 @@ export default function Home() {
           )}
 
           {allowedType && !error && (
-          <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-            {locale === "si"
-              ? "කාණ්ඩය:"           // Sinhala: "Category Type"
-              : locale === "ta"
-              ? "வகை:"            // Tamil: "Category Type"
-              : "Category Type:"}
-            {" "}
-            <span className="text-green-500 font-semibold">
-              {t.fuelType[allowedType]}
-            </span>
-          </p>
+            <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+              {locale === "si"
+                ? "කාණ්ඩය:"
+                : locale === "ta"
+                ? "வகை:"
+                : "Category Type:"}{" "}
+              <span className="text-green-500 font-semibold">
+                {t.fuelType[allowedType]}
+              </span>
+            </p>
           )}
         </CardContent>
       </Card>
@@ -196,7 +213,8 @@ export default function Home() {
             <span className="w-4 h-4 bg-red-500 rounded"></span> {t.legend.pastDay}
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-4 h-4 bg-gray-300 dark:bg-gray-700 rounded"></span> {t.legend.notAllowed}
+            <span className="w-4 h-4 bg-gray-300 dark:bg-gray-700 rounded"></span>{" "}
+            {t.legend.notAllowed}
           </div>
         </div>
       </div>
