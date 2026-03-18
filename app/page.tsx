@@ -110,16 +110,17 @@ export default function Home() {
           )}
 
           {allowedType && !error && (
-            <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-              {locale === "si"
-                ? "ඉන්ධන වර්ගය:"
-                : locale === "ta"
-                ? "எரிபொருள் வகை:"
-                : "Fuel Type:"}{" "}
-              <span className="text-green-500 font-semibold">
-                {t.fuelType[allowedType]}
-              </span>
-            </p>
+          <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+            {locale === "si"
+              ? "කාණ්ඩ්‍ය:"           // Sinhala: "Category Type"
+              : locale === "ta"
+              ? "வகை:"            // Tamil: "Category Type"
+              : "Category Type:"}
+            {" "}
+            <span className="text-green-500 font-semibold">
+              {t.fuelType[allowedType]}
+            </span>
+          </p>
           )}
         </CardContent>
       </Card>
