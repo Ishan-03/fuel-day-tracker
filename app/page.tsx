@@ -112,7 +112,7 @@ export default function Home() {
           {allowedType && !error && (
           <p className="text-center text-sm text-gray-600 dark:text-gray-400">
             {locale === "si"
-              ? "කාණ්ඩ්‍ය:"           // Sinhala: "Category Type"
+              ? "කාණ්ඩය:"           // Sinhala: "Category Type"
               : locale === "ta"
               ? "வகை:"            // Tamil: "Category Type"
               : "Category Type:"}
