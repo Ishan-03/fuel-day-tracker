@@ -1,10 +1,8 @@
-import type { UserConfig } from 'next-i18next';
-
-const nextI18NextConfig: UserConfig = {
+/** @type {import('next-i18next').UserConfig} */
+module.exports = {
   i18n: {
     defaultLocale: 'en',
-    locales: ['en', 'si'], // 'si' = Sinhala
+    locales: ['en', 'si', 'ta'], // add your languages
   },
+  reloadOnPrerender: process.env.NODE_ENV === 'development',
 };
-
-export default nextI18NextConfig;
