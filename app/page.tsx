@@ -24,37 +24,19 @@ export default function Home() {
 
   const t = translations[locale]
 
-  // Update currentDate at midnight automatically
+  // Update currentDate every minute to handle day change
   useEffect(() => {
-    const updateToday = () => setCurrentDate(new Date())
-
-    const now = new Date()
-    const msUntilMidnight =
-      new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime() -
-      now.getTime()
-
-    const timeout = setTimeout(() => {
-      updateToday()
-      setInterval(updateToday, 24 * 60 * 60 * 1000) // every 24h
-    }, msUntilMidnight)
-
-    return () => clearTimeout(timeout)
+    const interval = setInterval(() => setCurrentDate(new Date()), 60 * 1000)
+    return () => clearInterval(interval)
   }, [])
 
   const handleCheck = () => {
-    setError("") // reset error
-    if (vehicle.length !== 4) {
-      setError(t.errors.digits)
+    setError("")
+    if (vehicle.length !== 4 || !/^\d{4}$/.test(vehicle)) {
+      setError(vehicle.length !== 4 ? t.errors.digits : t.errors.invalid)
       setAllowedType(null)
       return
     }
-
-    if (!/^\d{4}$/.test(vehicle)) {
-      setError(t.errors.invalid)
-      setAllowedType(null)
-      return
-    }
-
     const lastDigit = parseInt(vehicle[vehicle.length - 1])
     setAllowedType(lastDigit % 2 === 0 ? "even" : "odd")
   }
@@ -64,7 +46,7 @@ export default function Home() {
   const days = eachDayOfInterval({ start, end })
   const startDayIndex = getDay(start)
 
-  // Today at midnight for comparison
+  // Today at midnight
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
@@ -72,30 +54,18 @@ export default function Home() {
     <main className="min-h-screen p-6 bg-gradient-to-br from-gray-50 to-gray-200 dark:from-black dark:to-gray-900 transition-colors">
       {/* Language Switcher */}
       <div className="flex justify-end mb-6 gap-2">
-        <Button
-          size="sm"
-          variant={locale === "en" ? "default" : "outline"}
-          onClick={() => setLocale("en")}
-        >
-          English
-        </Button>
-        <Button
-          size="sm"
-          variant={locale === "si" ? "default" : "outline"}
-          onClick={() => setLocale("si")}
-        >
-          සිංහල
-        </Button>
-        <Button
-          size="sm"
-          variant={locale === "ta" ? "default" : "outline"}
-          onClick={() => setLocale("ta")}
-        >
-          தமிழ்
-        </Button>
+        {["en", "si", "ta"].map((l) => (
+          <Button
+            key={l}
+            size="sm"
+            variant={locale === l ? "default" : "outline"}
+            onClick={() => setLocale(l as "en" | "si" | "ta")}
+          >
+            {l === "en" ? "English" : l === "si" ? "සිංහල" : "தமிழ்"}
+          </Button>
+        ))}
       </div>
 
-      {/* Title */}
       <h1 className="text-4xl font-bold text-center mb-8 text-gray-900 dark:text-white">
         {t.title}
       </h1>
@@ -178,7 +148,7 @@ export default function Home() {
           ))}
           {days.map((date) => {
             const day = date.getDate()
-            const isPast = date < today
+            const isPast = date.getTime() < today.getTime()
             const isAllowed =
               allowedType &&
               ((allowedType === "even" && day % 2 === 0) ||
