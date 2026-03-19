@@ -17,7 +17,7 @@ export default function Footer() {
 
         {/* Copyright */}
         <div className="text-sm text-gray-600 dark:text-gray-400 pt-4 border-t border-gray-200 dark:border-gray-800">
-          © {new Date().getFullYear()} Fuel Day Tracker by CFE404
+          © {new Date().getFullYear()} Fuel Days Tracker by CFE404
         </div>
       </div>
     </footer>
