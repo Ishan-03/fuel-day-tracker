@@ -51,7 +51,8 @@ export default function Home() {
   const days = eachDayOfInterval({ start, end })
   const startDayIndex = getDay(start)
 
-  const today = new Date(currentDate)
+  // ✅ FIX: real today (NOT currentDate)
+  const today = new Date()
   today.setHours(0, 0, 0, 0)
 
   return (
@@ -164,16 +165,19 @@ export default function Home() {
           {days.map((date) => {
             const day = date.getDate()
 
-            const isPast = date.getTime() < today.getTime()
+            // ✅ FIX: normalize date (timezone safe)
+            const normalizedDate = new Date(date)
+            normalizedDate.setHours(0, 0, 0, 0)
+
+            const isPast = normalizedDate < today
 
             const isAllowed =
               allowedType &&
               ((allowedType === "even" && day % 2 === 0) ||
                 (allowedType === "odd" && day % 2 !== 0))
 
-            const isToday =
-              format(date, "yyyy-MM-dd") ===
-              format(currentDate, "yyyy-MM-dd")
+            // ✅ FIX: correct today detection
+            const isToday = normalizedDate.getTime() === today.getTime()
 
             return (
               <div
