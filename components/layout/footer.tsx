@@ -1,4 +1,3 @@
-
 export default function Footer() {
   return (
     <footer className="mt-16 backdrop-blur-xl bg-white/70 dark:bg-white/5 border-t border-gray-200 dark:border-white/10">
@@ -17,7 +16,7 @@ export default function Footer() {
 
         {/* Copyright */}
         <div className="text-sm text-gray-600 dark:text-gray-400 pt-4 border-t border-gray-200 dark:border-gray-800">
-          © {new Date().getFullYear()} Fuel Days Tracker by CFE404
+          © {new Date().getFullYear()} Fuel Days Tracker by CFE404. All rights reserved.
         </div>
       </div>
     </footer>
