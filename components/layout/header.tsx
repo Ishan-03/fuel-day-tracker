@@ -16,7 +16,7 @@ export default function Header() {
           className="flex items-center gap-2 text-lg font-semibold tracking-tight text-gray-900 dark:text-white"
         >
           <span className="text-2xl">⛽</span>
-          Fuel Day Tracker
+          FDT
         </Link>
 
         {/* Right Side */}
