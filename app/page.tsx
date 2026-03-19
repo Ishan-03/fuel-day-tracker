@@ -219,7 +219,7 @@ export default function Home() {
                 variant={locale === l ? "default" : "outline"}
                 onClick={() => setLocale(l as "en" | "si" | "ta")}
               >
-                {l === "en" ? "English" : l === "si" ? "සිංහල" : "தமிழ்"}
+                {l === "en" ? "English" : l === "si" ? "සිංහල" : "தமி"}
               </Button>
             ))}
           </div>
