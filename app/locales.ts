@@ -1,7 +1,7 @@
 export const translations = {
   en: {
     title: "⛽ Fuel Day Tracker",
-    vehicleLabel: "Enter Vehicle Last 4 Digits",
+    vehicleLabel: "Enter Vehicle Number Last 4 Digits",
     placeholder: "e.g. 1234",
     checkButton: "Check Fuel Days",
     fuelType: { even: "Even", odd: "Odd" },
