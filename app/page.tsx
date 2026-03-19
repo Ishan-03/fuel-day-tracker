@@ -50,7 +50,7 @@ export default function Home() {
   const days = eachDayOfInterval({ start, end })
   const startDayIndex = getDay(start)
 
-  // ✅ FIX: real today (NOT currentDate)
+  // check today
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
@@ -110,7 +110,7 @@ export default function Home() {
           {allowedType && !error && (
             <p className="text-center text-sm text-gray-600 dark:text-gray-400">
               {locale === "si"
-                ? "කාණ්ඩය:"
+                ? "අයත්වන කාණ්ඩය:"
                 : locale === "ta"
                 ? "வகை:"
                 : "Category Type:"}{" "}
@@ -164,7 +164,7 @@ export default function Home() {
           {days.map((date) => {
             const day = date.getDate()
 
-            // ✅ FIX: normalize date (timezone safe)
+            // normalize date (timezone safe)
             const normalizedDate = new Date(date)
             normalizedDate.setHours(0, 0, 0, 0)
 
@@ -175,7 +175,7 @@ export default function Home() {
               ((allowedType === "even" && day % 2 === 0) ||
                 (allowedType === "odd" && day % 2 !== 0))
 
-            // ✅ FIX: correct today detection
+            // today detection
             const isToday = normalizedDate.getTime() === today.getTime()
 
             return (
