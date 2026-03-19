@@ -16,7 +16,7 @@ export const translations = {
     }
   },
   si: {
-    title: "⛽ ඉන්ධන ලබාගෑනිමේ දිනයන් නිරීක්ෂකය",
+    title: "⛽ ඉන්ධන ලබාගැනීමේ දිනයන් නිරීක්ෂකය",
     vehicleLabel: "වාහන අංකයේ අවසන් අංක 4 ඇතුළත් කරන්න",
     placeholder: "උදා: 1234",
     checkButton: "දිනය පරීක්ෂා කරන්න",
