@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
 import {
   addMonths,
   subMonths,
@@ -8,58 +8,56 @@ import {
   endOfMonth,
   eachDayOfInterval,
   getDay,
-} from "date-fns"
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { translations } from "./locales"
+} from "date-fns";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { translations } from "./locales";
 
 export default function Home() {
-  const [vehicle, setVehicle] = useState("")
-  const [allowedType, setAllowedType] = useState<"odd" | "even" | null>(null)
-  const [currentDate, setCurrentDate] = useState(new Date())
-  const [locale, setLocale] = useState<"en" | "si" | "ta">("en")
-  const [error, setError] = useState("")
-  const [isMobile, setIsMobile] = useState(false)
+  const [vehicle, setVehicle] = useState("");
+  const [allowedType, setAllowedType] = useState<"odd" | "even" | null>(null);
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [locale, setLocale] = useState<"en" | "si" | "ta">("en");
+  const [error, setError] = useState("");
+  const [isMobile, setIsMobile] = useState(false);
 
-  const t = translations[locale]
+  const t = translations[locale];
 
   // Detect mobile
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 640)
-    handleResize()
-    window.addEventListener("resize", handleResize)
-    return () => window.removeEventListener("resize", handleResize)
-  }, [])
+    const handleResize = () => setIsMobile(window.innerWidth < 640);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // Update current date every minute
   useEffect(() => {
-    const interval = setInterval(() => setCurrentDate(new Date()), 60 * 1000)
-    return () => clearInterval(interval)
-  }, [])
+    const interval = setInterval(() => setCurrentDate(new Date()), 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleCheck = () => {
-    setError("")
+    setError("");
     if (vehicle.length !== 4 || !/^\d{4}$/.test(vehicle)) {
-      setError(vehicle.length !== 4 ? t.errors.digits : t.errors.invalid)
-      setAllowedType(null)
-      return
+      setError(vehicle.length !== 4 ? t.errors.digits : t.errors.invalid);
+      setAllowedType(null);
+      return;
     }
-    const lastDigit = parseInt(vehicle[vehicle.length - 1])
-    setAllowedType(lastDigit % 2 === 0 ? "even" : "odd")
-  }
+    const lastDigit = parseInt(vehicle[vehicle.length - 1]);
+    setAllowedType(lastDigit % 2 === 0 ? "even" : "odd");
+  };
 
   // Calendar calculations
-  const start = startOfMonth(currentDate)
-  const end = endOfMonth(currentDate)
-  const days = eachDayOfInterval({ start, end })
-  const startDayIndex = getDay(start)
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
+  const start = startOfMonth(currentDate);
+  const end = endOfMonth(currentDate);
+  const days = eachDayOfInterval({ start, end });
+  const startDayIndex = getDay(start);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-200 dark:from-black dark:to-gray-900 transition-colors p-4">
-
+    <main className="min-h-screen bg-background text-foreground transition-colors p-4">
       {isMobile ? (
         // ---------- MOBILE UI ----------
         <div className="space-y-4">
@@ -78,52 +76,58 @@ export default function Home() {
           </div>
 
           {/* Title */}
-          <h1 className="text-2xl font-bold text-center text-gray-900 dark:text-white">
-            {t.title}
-          </h1>
+          <h1 className="text-2xl font-bold text-center">{t.title}</h1>
 
           {/* Input Card */}
-          <Card className="backdrop-blur-xl bg-white/70 dark:bg-white/5 border border-gray-200 dark:border-white/10 shadow-xl rounded-xl">
+          <Card className="bg-background border shadow-sm rounded-xl">
             <CardContent className="p-4 space-y-3">
-              <div>
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              <div className="space-y-3">
+                <label className="text-sm font-medium text-center block">
                   {t.vehicleLabel}
                 </label>
-                <Input
-                  placeholder={t.placeholder}
-                  value={vehicle}
-                  maxLength={4}
-                  onChange={(e) => setVehicle(e.target.value.replace(/\D/g, ""))}
-                  className="text-center text-base tracking-widest bg-white/80 dark:bg-black/40 border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-green-500"
-                />
+
+                {/* Number Pad */}
+                <div className="grid grid-cols-5 gap-2 justify-items-center">
+                  {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+                    <Button
+                      key={num}
+                      variant="outline"
+                      onClick={() => {
+                        const type = num % 2 === 0 ? "even" : "odd";
+                        setAllowedType(type);
+                        setError("");
+                      }}
+                      className="w-10 h-10 rounded-full text-sm font-semibold flex items-center justify-center"
+                    >
+                      {num}
+                    </Button>
+                  ))}
+                </div>
+
+                {allowedType && (
+                  <p className="text-center text-sm text-muted-foreground">
+                    {locale === "si"
+                      ? "අයත්වන කාණ්ඩය:"
+                      : locale === "ta"
+                        ? "வகை:"
+                        : "Category Type:"}{" "}
+                    <span className="text-green-500 font-semibold">
+                      {t.fuelType[allowedType]}
+                    </span>
+                  </p>
+                )}
               </div>
 
-              <Button
-                onClick={handleCheck}
-                className="w-full text-base font-semibold rounded-lg bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200 transition"
-              >
-                {t.checkButton}
-              </Button>
-
               {error && (
-                <p className="text-center text-sm text-red-500 font-medium">{error}</p>
-              )}
-
-              {allowedType && !error && (
-                <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-                  {locale === "si"
-                    ? "අයත්වන කාණ්ඩය:"
-                    : locale === "ta"
-                    ? "வகை:"
-                    : "Category Type:"}{" "}
-                  <span className="text-green-500 font-semibold">{t.fuelType[allowedType]}</span>
+                <p className="text-center text-sm text-destructive font-medium">
+                  {error}
                 </p>
               )}
             </CardContent>
           </Card>
 
           {/* Calendar */}
-          <div className="backdrop-blur-xl bg-white/70 dark:bg-white/5 border border-gray-200 dark:border-white/10 shadow-xl rounded-xl p-4 overflow-x-auto">
+          <div className="bg-background border shadow-sm rounded-xl p-4 overflow-x-auto">
             <div className="flex justify-between items-center mb-3">
               <Button
                 variant="outline"
@@ -133,7 +137,7 @@ export default function Home() {
                 {t.prevMonth}
               </Button>
 
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-lg font-semibold">
                 {t.months[currentDate.getMonth()]} {currentDate.getFullYear()}
               </h2>
 
@@ -147,7 +151,7 @@ export default function Home() {
             </div>
 
             {/* Week Days */}
-            <div className="grid grid-cols-7 text-center text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+            <div className="grid grid-cols-7 text-center text-xs font-medium text-muted-foreground mb-1">
               {t.weekDays.map((day) => (
                 <div key={day}>{day}</div>
               ))}
@@ -160,15 +164,15 @@ export default function Home() {
               ))}
 
               {days.map((date) => {
-                const day = date.getDate()
-                const normalizedDate = new Date(date)
-                normalizedDate.setHours(0, 0, 0, 0)
-                const isPast = normalizedDate < today
+                const day = date.getDate();
+                const normalizedDate = new Date(date);
+                normalizedDate.setHours(0, 0, 0, 0);
+                const isPast = normalizedDate < today;
                 const isAllowed =
                   allowedType &&
                   ((allowedType === "even" && day % 2 === 0) ||
-                    (allowedType === "odd" && day % 2 !== 0))
-                const isToday = normalizedDate.getTime() === today.getTime()
+                    (allowedType === "odd" && day % 2 !== 0));
+                const isToday = normalizedDate.getTime() === today.getTime();
 
                 return (
                   <div
@@ -176,22 +180,22 @@ export default function Home() {
                     className={`h-10 flex items-center justify-center text-xs font-semibold rounded-md transition-all duration-200 border cursor-pointer
                       ${
                         isPast
-                          ? "bg-red-500/80 text-white border-red-500"
+                          ? "bg-red-500 text-white border-red-500"
                           : isAllowed
-                          ? "bg-green-500 text-white border-green-500 shadow hover:scale-105"
-                          : "bg-white/80 dark:bg-black/40 text-gray-700 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-800"
+                            ? "bg-green-500 text-white border-green-500 shadow"
+                            : "bg-muted text-muted-foreground border"
                       }
-                      ${isToday ? "ring-1 ring-blue-500" : ""}
+                      ${isToday ? "ring-2 ring-primary" : ""}
                     `}
                   >
                     {day}
                   </div>
-                )
+                );
               })}
             </div>
 
             {/* Legend */}
-            <div className="flex flex-wrap justify-center gap-4 mt-4 text-xs text-gray-600 dark:text-gray-400">
+            <div className="flex flex-wrap justify-center gap-4 mt-4 text-xs text-muted-foreground">
               <div className="flex items-center gap-1">
                 <span className="w-3 h-3 bg-green-500 rounded"></span>
                 {t.legend.fuelDay}
@@ -201,7 +205,7 @@ export default function Home() {
                 {t.legend.pastDay}
               </div>
               <div className="flex items-center gap-1">
-                <span className="w-3 h-3 bg-gray-300 dark:bg-gray-700 rounded"></span>
+                <span className="w-3 h-3 bg-muted rounded"></span>
                 {t.legend.notAllowed}
               </div>
             </div>
@@ -224,52 +228,58 @@ export default function Home() {
             ))}
           </div>
 
-          <h1 className="text-4xl font-bold text-center mb-8 text-gray-900 dark:text-white">
-            {t.title}
-          </h1>
+          <h1 className="text-4xl font-bold text-center mb-8">{t.title}</h1>
 
           {/* Input Card */}
-          <Card className="max-w-md mx-auto mb-10 backdrop-blur-xl bg-white/70 dark:bg-white/5 border border-gray-200 dark:border-white/10 shadow-2xl rounded-2xl">
+          <Card className="max-w-md mx-auto mb-10 bg-background border shadow-sm rounded-xl">
             <CardContent className="p-6 space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              <div className="space-y-4">
+                <label className="text-sm font-medium text-center block">
                   {t.vehicleLabel}
                 </label>
-                <Input
-                  placeholder={t.placeholder}
-                  value={vehicle}
-                  maxLength={4}
-                  onChange={(e) => setVehicle(e.target.value.replace(/\D/g, ""))}
-                  className="text-center text-lg tracking-widest bg-white/80 dark:bg-black/40 border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-green-500"
-                />
+
+                {/* Number Pad */}
+                <div className="grid grid-cols-5 gap-3 justify-items-center">
+                  {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+                    <Button
+                      key={num}
+                      variant="outline"
+                      onClick={() => {
+                        const type = num % 2 === 0 ? "even" : "odd";
+                        setAllowedType(type);
+                        setError("");
+                      }}
+                      className="w-12 h-12 rounded-full text-base font-semibold flex items-center justify-center"
+                    >
+                      {num}
+                    </Button>
+                  ))}
+                </div>
+
+                {allowedType && (
+                  <p className="text-center text-sm text-muted-foreground">
+                    {locale === "si"
+                      ? "අයත්වන කාණ්ඩය:"
+                      : locale === "ta"
+                        ? "வகை:"
+                        : "Category Type:"}{" "}
+                    <span className="text-green-500 font-semibold">
+                      {t.fuelType[allowedType]}
+                    </span>
+                  </p>
+                )}
               </div>
 
-              <Button
-                onClick={handleCheck}
-                className="w-full text-base font-semibold rounded-xl bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200 transition"
-              >
-                {t.checkButton}
-              </Button>
-
               {error && (
-                <p className="text-center text-sm text-red-500 font-medium">{error}</p>
-              )}
-
-              {allowedType && !error && (
-                <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-                  {locale === "si"
-                    ? "අයත්වන කාණ්ඩය:"
-                    : locale === "ta"
-                    ? "வகை:"
-                    : "Category Type:"}{" "}
-                  <span className="text-green-500 font-semibold">{t.fuelType[allowedType]}</span>
+                <p className="text-center text-sm text-destructive font-medium">
+                  {error}
                 </p>
               )}
             </CardContent>
           </Card>
 
           {/* Calendar */}
-          <div className="max-w-4xl mx-auto backdrop-blur-xl bg-white/70 dark:bg-white/5 border border-gray-200 dark:border-white/10 shadow-2xl rounded-2xl p-6">
+          <div className="max-w-4xl mx-auto bg-background border shadow-sm rounded-xl p-6">
             <div className="flex justify-between items-center mb-6">
               <Button
                 variant="outline"
@@ -279,7 +289,7 @@ export default function Home() {
                 {t.prevMonth}
               </Button>
 
-              <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-2xl font-semibold">
                 {t.months[currentDate.getMonth()]} {currentDate.getFullYear()}
               </h2>
 
@@ -293,7 +303,7 @@ export default function Home() {
             </div>
 
             {/* Week Days */}
-            <div className="grid grid-cols-7 mb-3 text-center text-sm font-medium text-gray-500 dark:text-gray-400">
+            <div className="grid grid-cols-7 mb-3 text-center text-sm font-medium text-muted-foreground">
               {t.weekDays.map((day) => (
                 <div key={day}>{day}</div>
               ))}
@@ -306,15 +316,15 @@ export default function Home() {
               ))}
 
               {days.map((date) => {
-                const day = date.getDate()
-                const normalizedDate = new Date(date)
-                normalizedDate.setHours(0, 0, 0, 0)
-                const isPast = normalizedDate < today
+                const day = date.getDate();
+                const normalizedDate = new Date(date);
+                normalizedDate.setHours(0, 0, 0, 0);
+                const isPast = normalizedDate < today;
                 const isAllowed =
                   allowedType &&
                   ((allowedType === "even" && day % 2 === 0) ||
-                    (allowedType === "odd" && day % 2 !== 0))
-                const isToday = normalizedDate.getTime() === today.getTime()
+                    (allowedType === "odd" && day % 2 !== 0));
+                const isToday = normalizedDate.getTime() === today.getTime();
 
                 return (
                   <div
@@ -322,22 +332,22 @@ export default function Home() {
                     className={`h-14 flex items-center justify-center rounded-xl text-sm font-semibold transition-all duration-200 border cursor-pointer
                       ${
                         isPast
-                          ? "bg-red-500/80 text-white border-red-500"
+                          ? "bg-red-500 text-white border-red-500"
                           : isAllowed
-                          ? "bg-green-500 text-white border-green-500 shadow-lg hover:scale-105"
-                          : "bg-white/80 dark:bg-black/40 text-gray-700 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-800"
+                            ? "bg-green-500 text-white border-green-500 shadow"
+                            : "bg-muted text-muted-foreground border"
                       }
-                      ${isToday ? "ring-2 ring-blue-500" : ""}
+                      ${isToday ? "ring-2 ring-primary" : ""}
                     `}
                   >
                     {day}
                   </div>
-                )
+                );
               })}
             </div>
 
             {/* Legend */}
-            <div className="flex gap-6 mt-6 text-sm justify-center text-gray-600 dark:text-gray-400">
+            <div className="flex gap-6 mt-6 text-sm justify-center text-muted-foreground">
               <div className="flex items-center gap-2">
                 <span className="w-4 h-4 bg-green-500 rounded"></span>
                 {t.legend.fuelDay}
@@ -347,7 +357,7 @@ export default function Home() {
                 {t.legend.pastDay}
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-4 h-4 bg-gray-300 dark:bg-gray-700 rounded"></span>
+                <span className="w-4 h-4 bg-muted rounded"></span>
                 {t.legend.notAllowed}
               </div>
             </div>
@@ -355,5 +365,5 @@ export default function Home() {
         </div>
       )}
     </main>
-  )
+  );
 }

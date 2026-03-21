@@ -1,15 +1,14 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { ModeToggle } from "@/components/mode-toggle"
-import { Button } from "@/components/ui/button"
-import { Menu } from "lucide-react"
+import Link from "next/link";
+import { ModeToggle } from "@/components/mode-toggle";
+import { Button } from "@/components/ui/button";
+import { Menu } from "lucide-react";
 
 export default function Header() {
   return (
     <header className="sticky top-0 z-50 w-full backdrop-blur-xl bg-white/70 dark:bg-white/5 border-b border-gray-200 dark:border-white/10 shadow-sm">
       <div className="max-w-6xl mx-auto flex h-16 items-center justify-between px-4">
-
         {/* Logo */}
         <Link
           href="/"
@@ -31,5 +30,5 @@ export default function Header() {
         </div>
       </div>
     </header>
-  )
+  );
 }
